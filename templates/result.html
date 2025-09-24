@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Recommendations</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='ResultStyle.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-content">
+            <h1 class="header-title">Anime RecSys</h1>
+            <div class="user-info">
+                <span>Welcome, {{ username }}!</span>
+                <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <h2>Here Are Your Recommendations</h2>
+        
+        {% if recommendations %}
+            <div class="results-grid">
+                {% for anime in recommendations %}
+                <div class="result-card">
+                    <h3>{{ anime.name }}</h3>
+                    <p><strong>Genre:</strong> {{ anime.genre }}</p>
+                    <p><strong>Type:</strong> {{ anime.type }}</p>
+                    <p><strong>Rating:</strong> {{ "%.1f"|format(anime.rating) }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="no-results">No recommendations were found for your criteria.</p>
+        {% endif %}
+
+        <a href="{{ url_for('index') }}" class="back-button">Try Again</a>
+    </div>
+</body>
+</html>
