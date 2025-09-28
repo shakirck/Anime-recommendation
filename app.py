@@ -47,13 +47,15 @@ with app.app_context():
 
 # --- ML Model & Data Loading ---
 try:
-    similarity = pickle.load(open('similarity.pkl','rb'))
-    anime_df = pd.read_csv('anime.csv')
+    similarity = pickle.load(open('./model/dt_model.pkl','rb'))
+    anime_df = pd.read_csv('./anime.csv')
+    print("Model and data loaded successfully")
+    print(anime_df.head())
 except Exception as e:
     similarity = None
     anime_df = None
     print(f"CRITICAL ERROR: Could not load model/data. {e}")
-
+    print(e)
 # --- Recommendation Logic ---
 def recommend(anime_title):
     if anime_df is None or similarity is None:
@@ -72,6 +74,7 @@ def recommend(anime_title):
 def home():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
+    print("Home route accessed")
     return render_template('home.html')
 
 @app.route('/login', methods=['POST'])
@@ -109,7 +112,12 @@ def logout():
 @login_required
 def index():
     anime_titles = anime_df['name'].values if anime_df is not None else []
-    return render_template('index.html', username=current_user.username, anime_list=anime_titles)
+    print("Index route accessed")
+    genres = anime_df['genre'].unique()
+    types = anime_df['type'].unique()
+    print(genres)
+    print(types)
+    return render_template('index.html', username=current_user.username, anime_list=anime_titles, genres=genres, types=types)
 
 @app.route('/recommend', methods=['POST'])
 @login_required
@@ -117,6 +125,7 @@ def get_recommendations():
     selected_anime = request.form.get('anime')
     recommendations = recommend(selected_anime)
     anime_titles = anime_df['name'].values if anime_df is not None else []
+    print(recommendations)
     return render_template('index.html', 
                            username=current_user.username, 
                            anime_list=anime_titles, 
